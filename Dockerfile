@@ -1,25 +1,18 @@
-# Use a base image with Node.js and LibreOffice
-FROM node:18-slim
+FROM python:3.11-slim
 
-# Install LibreOffice
-RUN apt-get update && apt-get install -y libreoffice && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Set the working directory
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libreoffice \
+    poppler-utils \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# pdf2docx (para PDF -> DOCX)
+RUN pip install --no-cache-dir pdf2docx
+
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
+COPY convert_pdf2docx.py /app/convert_pdf2docx.py
 
-# Copy application code
-COPY . .
-
-# Create necessary folders
-RUN mkdir -p uploads converted
-
-# Expose the port
-EXPOSE 3000
-
-# Start the app
-CMD ["node", "index.js"]
+CMD ["/bin/bash"]
