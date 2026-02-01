@@ -2,24 +2,32 @@ FROM node:20-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Python + LibreOffice
+# Instala dependências do sistema + locale UTF-8
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     libreoffice \
     poppler-utils \
-    && apt-get clean \apt/lists/*
+    locales \
+    && sed -i 's/# pt_BR.UTF-8 UTF-8/pt_BR.UTF-8 UTF-8/' /etc/locale.gen \
+    && locale-gen pt_BR.UTF-8 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instala pdf2docx 
+ENV LANG=pt_BR.UTF-8
+ENV LANGUAGE=pt_BR:pt
+ENV LC_ALL=pt_BR.UTF-8
+
+# Instala pdf2docx
 RUN pip3 install --no-cache-dir --break-system-packages pdf2docx
 
 WORKDIR /app
 
 # Dependências Node
 COPY package*.json ./
-RUN npm install --omit=dev   # ou npm install --only=production
+RUN npm install --omit=dev
 
-# Código (Node + Python)
+# Código fonte
 COPY . .
 
 RUN mkdir -p /app/uploads /app/converted

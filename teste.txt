@@ -1,0 +1,1 @@
+Teste de conversão TXT para PDF dentro do Docker.
