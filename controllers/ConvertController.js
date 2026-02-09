@@ -151,7 +151,7 @@ module.exports = class ConvertController {
 
     try {
       await execFileAsync('python3', [
-        '/usr/local/bin/convert_pdf2docx.py',
+        'scripts/convert_pdf2docx.py',
         inputPath,
         outputPath
       ])
