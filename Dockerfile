@@ -2,28 +2,24 @@ FROM node:20-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Python + LibreOffice
+# Instalar LibreOffice
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
     libreoffice \
-    poppler-utils \
-    && apt-get clean \apt/lists/*
-
-# Instala pdf2docx 
-RUN pip3 install --no-cache-dir --break-system-packages pdf2docx
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Dependências Node
+# Instalar dependências Node
 COPY package*.json ./
-RUN npm install --omit=dev   # ou npm install --only=production
+RUN npm install --omit=dev
 
-# Código (Node + Python)
+# Copiar código
 COPY . .
 
+# Criar pastas
 RUN mkdir -p /app/uploads /app/converted
 
 EXPOSE 3000
 
-CMD ["node", "index.js"]
+CMD ["node", "src/server.js"]
