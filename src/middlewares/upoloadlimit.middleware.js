@@ -1,6 +1,6 @@
 const multer = require('multer');
 const path = require('path');
-const { uploadDir } = require('../config/env');
+const { uploadDir } = require('../config/config.env');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
