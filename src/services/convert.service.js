@@ -14,17 +14,14 @@ async function convertFile(bufferFile, ext) {
     }
 }
 
-exports.handleConversion = async (req) => {
+exports.handleConversion = async (req, inputPath, outputPath) => {
     const file = req.file;
     const format = req.query.format;
+    const outputExt = "." + format;
 
     if (!file || !format){
         throw new Error("Missing file or format")
     }
-
-    const inputPath = file.path;
-    const outputExt = "." + format;
-    const outputPath = path.join(convertedDir, path.basename(file.filename, path.extname(file.filename)) + outputExt)
 
     console.log('Input: '+ inputPath);
     console.log('Output: '+ outputPath);
@@ -39,7 +36,8 @@ exports.handleConversion = async (req) => {
     
     await fs.writeFile(outputPath, converted);
     console.log("File written: ", outputPath);
+    const result = `converted${outputExt}`
 
-    return {inputPath, outputPath, filename: `converted${outputExt}`};
+    return result;
 }
 

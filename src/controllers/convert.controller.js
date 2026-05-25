@@ -1,21 +1,36 @@
 const convertService = require("../services/convert.service");
+const pdf2DocxPy = require("../scripts/Pdf2Docx")
+const { spawn } = require("child_process")
 const fs = require("fs");
+const path = require("path")
 
 exports.convert = async(req, res) => {
     try {
-        const format = req.query.format
-        const result = await convertService.handleConversion(req);
-        res.download(result.outputPath, result.filename, async (err) => {
+        const inputPath = file.path;
+        const outputExt = "." + format;
+        const outputPath = path.join(convertedDir, path.basename(file.filename, path.extname(file.filename)) + outputExt)
+        const inputFormat = path.extname(req.file.filename)
+        
+        if (inputFormat == ".docx" && outputExt == ".pdf"){
+            const pythonProcess = spawn("pythhon", [pdf2DocxPy, inputPath, outputPath]);
+
+        }
+        
+        
+        else {
+            const result = await convertService.handleConversion(req, inputPath, outputPath);
+        }
+        res.download(outputPath, result, async (err) => {
             if (err) {
                 console.error('download error: ', err)
             }
             try {
-                if (result.inputPath) {
-                    await fs.promises.unlink(result.inputPath);
+                if (inputPath) {
+                    await fs.promises.unlink(inputPath);
                 }
 
-                if (result.outputPath) {
-                    await fs.promises.unlink(result.outputPath);
+                if (outputPath) {
+                    await fs.promises.unlink(outputPath);
                 }
             } catch (error) {
                 console.error("Cleanup error: ", error);
